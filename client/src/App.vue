@@ -1,18 +1,19 @@
 <template>
     <div id="app">
         <Header class="header"/>
-        <PrimaryPage class="primaryPage"/>
+<!--        <PrimaryPage class="primaryPage"/>-->
+        <router-view></router-view>
     </div>
 </template>
 
 <script>
 
     import Header from "./components/Header";
-    import PrimaryPage from "./views/PrimaryPage";
+    // import PrimaryPage from "./views/PrimaryPage";
     export default {
         name: 'App',
         components: {
-            PrimaryPage,
+            // PrimaryPage,
             Header,
         }
     }
@@ -34,6 +35,6 @@
     }
 
     .primaryPage{
-        height: 93% !important;
+        /*height: 100% !important;*/
     }
 </style>

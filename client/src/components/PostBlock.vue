@@ -1,8 +1,8 @@
 <template>
     <div class="postBlock">
         <div class="postTitle">
-            <p>{{this.title}}</p>
-            <p>{{this.author}}</p>
+            <p style="font-size: 1.2vw; font-weight: bold">{{this.title}}</p>
+            <p style="text-align: right">{{this.author}}</p>
         </div>
         <div class="postContent">
             <p style="text-align:left">{{this.description}}</p>
@@ -23,7 +23,7 @@
             description: String,
             numberOfComment: Number,
             updatedTime: Date
-        },                                                                                                                                                                          
+        },
         computed:{
             lastUpdatedUntilNow () {
                 let d = this.updatedTime;
@@ -35,7 +35,7 @@
 
 <style scoped>
     .postTitle{
-        height: 2vw;
+        height: 3vw;
         width: 100%;
         text-align: left;
     }
@@ -50,5 +50,10 @@
     }
     .postBlock{
         background-color: floralwhite;
+        margin: 1vw;
+        box-sizing: border-box;
+        padding: 1vw;
+        border-radius: 15px;
+        line-height: 1vw;
     }
 </style>

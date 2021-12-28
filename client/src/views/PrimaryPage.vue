@@ -6,6 +6,7 @@
                        :description="block.description"
                        :number-of-comment="block.numberOfComment"
                        :updated-time="block.datetime"
+                       class="blockClass"
             >
             </PostBlock>
         </div>
@@ -64,5 +65,11 @@
 <style scoped>
     .primaryPage{
         background-color: lightslategray;
+        padding-top: 0.5vw;
+    }
+    .blockClass{
+        width: 50%;
+        margin-left: 25%;
+        box-sizing: border-box;
     }
 </style>
