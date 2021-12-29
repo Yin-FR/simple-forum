@@ -1,7 +1,6 @@
 <template>
     <div id="app">
         <Header class="header"/>
-<!--        <PrimaryPage class="primaryPage"/>-->
         <router-view></router-view>
     </div>
 </template>
@@ -9,17 +8,17 @@
 <script>
 
     import Header from "./components/Header";
-    // import PrimaryPage from "./views/PrimaryPage";
     export default {
         name: 'App',
         components: {
-            // PrimaryPage,
             Header,
         }
     }
+
 </script>
 
 <style>
+
     #app {
         font-family: Avenir, Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
@@ -34,7 +33,4 @@
         height: 7% !important;
     }
 
-    .primaryPage{
-        /*height: 100% !important;*/
-    }
 </style>

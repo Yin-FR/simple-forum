@@ -1,7 +1,7 @@
 <template>
     <div class="header">
         <img src="../assets/IMT_Atlantique_logo_RVB.svg" alt="logo"/>
-        <span class="header_text">
+        <span class="header_text" @click="changePage">
             Simple Forum
         </span>
         <span style="float: right" class="header_text">
@@ -59,6 +59,9 @@
                         console.log(err)
                     });
                 this.emptyPost();
+            },
+            changePage() {
+                this.$router.push("/primary")
             }
         }
     }
