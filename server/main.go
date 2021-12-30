@@ -155,7 +155,7 @@ func hello_server_comment(w http.ResponseWriter, r *http.Request) {
 
 		for i := 0; i < len(Post_current); i++ {
 			if Post_current[i].Postid == post_id {
-				byteArray, err := json.MarshalIndent(Post_current[i].Comment, "", "  ")
+				byteArray, err := json.MarshalIndent(Post_current[i], "", "  ")
 				if err != nil {
 					fmt.Println(err)
 				}

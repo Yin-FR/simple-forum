@@ -1,10 +1,18 @@
 <template>
-    <div>
-        <div v-for="(comment, index) in this.allComments" :key="index">
+    <div style="background-color: lightslategray; padding-top: 0.8vw">
+        <CommentTitle
+                class="commentTitle"
+                :post-id="this.postDetail.postId"
+                :title="this.postDetail.title"
+                :author="this.postDetail.author"
+                :description="this.postDetail.content"
+                :number-of-comment="this.postDetail.commentNumber"
+        />
+        <div v-for="(comment, index) in this.postDetail.comment" :key="index">
             <CommentBlock
+                    class="commentBlock"
                     :author="comment.author"
-                    :description="comment.description"
-                    :updated-time="comment.dateTime"
+                    :description="comment.CommentContent"
             />
         </div>
     </div>
@@ -12,12 +20,13 @@
 
 <script>
     import CommentBlock from "../components/CommentBlock";
+    import CommentTitle from "../components/CommentTitle";
     export default {
         name: "PostPage",
-        components: {CommentBlock},
+        components: {CommentBlock, CommentTitle},
         data(){
             return {
-                allComments: []
+                postDetail: {}
             }
         },
         methods: {
@@ -25,7 +34,7 @@
                 let postId = this.$route.params.postId;
                 const axiosAjax = this.axios.create({
                     timeout: 60*1000,
-                    withCredentials: true
+                    withCredentials: false
                 });
                 let config = {
                     header: {
@@ -36,7 +45,8 @@
                     }
                 };
                 axiosAjax.get('http://localhost:8000/comment', config).then((res)=>{
-                    setTimeout(()=>{this.allComments = res.data;}, 100)
+                    console.log(res.data)
+                    setTimeout(()=>{this.postDetail = res.data;}, 100)
                 }).catch((err)=>{
                     this.$notify({
                         type: 'error',
@@ -53,5 +63,14 @@
 </script>
 
 <style scoped>
-
+    .commentBlock{
+        width: 50%;
+        margin-left: 25%;
+    }
+    .commentTitle{
+        width: 60%;
+        margin-left: 20%;
+        font-weight: bold;
+        box-sizing: border-box;
+    }
 </style>

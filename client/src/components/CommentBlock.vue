@@ -6,9 +6,6 @@
         <div class="postContent">
             <p style="text-align:left">{{this.description}}</p>
         </div>
-        <div class="postFoot">
-            <span style="float: left">{{this.lastUpdatedUntilNow}}</span>
-        </div>
     </div>
 </template>
 
@@ -17,14 +14,7 @@
         name: "PostBlock",
         props: {
             author: String,
-            description: String,
-            updatedTime: Date,
-        },
-        computed:{
-            lastUpdatedUntilNow () {
-                let d = this.updatedTime;
-                return d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes()
-            }
+            description: String
         },
         methods: {
         }

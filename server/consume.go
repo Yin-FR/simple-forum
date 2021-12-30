@@ -116,6 +116,7 @@ func comment_queue_built(ch *amqp.Channel, err error) amqp.Queue {
 			for i := 0; i < len(Post_current); i++ {
 				if Post_current[i].Postid == comment_temp.Postid {
 					Post_current[i].Comment = append(Post_current[i].Comment, *comment_temp)
+					Post_current[i].Comment_len += 1
 					Write_json(Post_current)
 				}
 			}

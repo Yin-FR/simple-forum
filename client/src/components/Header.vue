@@ -21,8 +21,8 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="closePost">Cancer</el-button>
-                <el-button type="primary" @click="closePost">Confirm</el-button>
+                <el-button @click="closePost(false)">Cancer</el-button>
+                <el-button type="primary" @click="closePost(true)">Confirm</el-button>
             </span>
         </el-dialog>
     </div>
