@@ -17,7 +17,7 @@
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
                 <el-form-item label="Content">
-                    <el-input type="textarea" v-model="form.desc"></el-input>
+                    <el-input type="textarea" v-model="form.content"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -36,7 +36,7 @@
                 dialogVisible: false,
                 form: {
                     title: '',
-                    desc: ''
+                    content: ''
                 }
             };
         },
@@ -49,11 +49,11 @@
                 this.dialogVisible = false;
                 if (submit) {
                     let titleSend = this.form.title;
-                    let descSend = this.form.desc;
-                    if (titleSend && descSend){
+                    let contentSend = this.form.content;
+                    if (titleSend && contentSend){
                         let postObj = {
                             title: titleSend,
-                            desc: descSend,
+                            content: contentSend,
                             author: (new Date()).valueOf()
                         };
                         let config = {
