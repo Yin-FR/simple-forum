@@ -4,7 +4,7 @@
             <el-button type="text" style="font-size: 1vw; font-weight: bold"
                        @click="openCommentPage"
             >{{this.title}}</el-button>
-            <p style="text-align: right">{{this.author}}</p>
+            <p style="text-align: right; margin-top: 0">{{this.author}}</p>
         </div>
         <div class="postContent">
             <p style="text-align:left">{{this.description}}</p>
