@@ -87,14 +87,13 @@ func hello_server(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// decoder := json.NewDecoder(r.Body)
-		// var params map[string]string
-		// decoder.Decode(&params)
-
+		decoder := json.NewDecoder(r.Body)
+		var params map[string]string
+		decoder.Decode(&params)
 		plaintext := Post{
-			Title:   r.URL.Query()["title"][0],
-			Author:  r.URL.Query()["author"][0],
-			Content: r.URL.Query()["content"][0]}
+			Title:   params["title"],
+			Author:  params["author"],
+			Content: params["content"]}
 
 		post_queue_publish(plaintext, "post", Ch, Error)
 		fmt.Fprintf(w, "ack")
@@ -135,6 +134,9 @@ func hello_server_comment(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 		var params map[string]string
 		decoder.Decode(&params)
+		// fmt.Fprintf(w, "%v", r.URL.Query()["postId"][0])
+		// fmt.Fprintf(w, "%v", r.URL.Query()["author"][0])
+		// fmt.Fprintf(w, "%v", r.URL.Query()["commentContent"][0])
 
 		plaintext := Comment{
 			Postid:         params["postId"],
@@ -142,12 +144,26 @@ func hello_server_comment(w http.ResponseWriter, r *http.Request) {
 			CommentContent: params["commentContent"]}
 
 		comment_queue_publish(plaintext, "comment", Ch, Error)
-
 		fmt.Fprintf(w, "ack")
 
 	case "GET":
-		// fmt.Fprintf(w, get_info_from_queue(Q_comment))
-		fmt.Fprintf(w, "got!!")
+		// decoder := json.NewDecoder(r.Body)
+		// var params map[string]string
+		// decoder.Decode(&params)
+
+		post_id := r.URL.Query()["postId"][0]
+
+		for i := 0; i < len(Post_current); i++ {
+			if Post_current[i].Postid == post_id {
+				byteArray, err := json.MarshalIndent(Post_current[i].Comment, "", "  ")
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Fprintf(w, string(byteArray))
+			}
+		}
+
+		// fmt.Fprintf(w, "got!!")
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
@@ -168,4 +184,18 @@ func main() {
 
 	handler := cors.Default().Handler(mux)
 	http.ListenAndServe(":8000", handler)
+
+	// ticker := time.NewTicker(30 * time.Second)
+	// quit := make(chan struct{})
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case <-ticker.C:
+	// 			Write_json(Post_current)
+	// 		case <-quit:
+	// 			ticker.Stop()
+	// 			return
+	// 		}
+	// 	}
+	// }()
 }

@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 )
 
+var Filename = "forum.json"
+
 // MyStruct is an example structure for this program.
 // type Post struct {
 // 	Postid      string    `json:"postId"`
@@ -33,4 +35,12 @@ func Read_json() []Post {
 	var posts []Post
 	json.Unmarshal([]byte(file), &posts)
 	return posts
+}
+
+func Write_json(p []Post) {
+	databyte, err := json.MarshalIndent(p, "", "  ")
+	failOnError(err, "fail to convert")
+
+	err = ioutil.WriteFile(Filename, databyte, 0644)
+	failOnError(err, "fail to save")
 }
