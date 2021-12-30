@@ -1,9 +1,6 @@
 <template>
     <div class="postBlock">
         <div class="postTitle">
-            <el-button type="text" style="font-size: 1vw; font-weight: bold"
-                       @click="openCommentPage"
-            >{{this.title}}</el-button>
             <p style="text-align: right">{{this.author}}</p>
         </div>
         <div class="postContent">
@@ -11,7 +8,6 @@
         </div>
         <div class="postFoot">
             <span style="float: left">{{this.lastUpdatedUntilNow}}</span>
-            <span style="float: right">{{this.numberOfComment}} comments</span>
         </div>
     </div>
 </template>
@@ -20,12 +16,9 @@
     export default {
         name: "PostBlock",
         props: {
-            title: String,
             author: String,
             description: String,
-            numberOfComment: Number,
             updatedTime: Date,
-            postId: Number
         },
         computed:{
             lastUpdatedUntilNow () {
@@ -34,9 +27,6 @@
             }
         },
         methods: {
-            openCommentPage() {
-                this.$router.push("/post/" + this.postId)
-            }
         }
     }
 </script>

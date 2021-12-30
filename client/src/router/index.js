@@ -11,6 +11,6 @@ export default new Router({
     routes:[
         {path: '/', name:'home', redirect: '/primary'},
         {path: '/primary', name:'primary', component: PrimaryPage},
-        {path: '/welcomeM', name: 'welcomeM', component: PostPage},
+        {path: '/post/:postId', name: 'post', component: PostPage},
     ]
 });

@@ -45,19 +45,51 @@
                 this.form.title = '';
                 this.form.desc = '';
             },
-            closePost() {
+            closePost(submit) {
                 this.dialogVisible = false;
-                this.emptyPost();
+                if (submit) {
+                    let titleSend = this.form.title;
+                    let descSend = this.form.desc;
+                    if (titleSend && descSend){
+                        let postObj = {
+                            title: titleSend,
+                            desc: descSend,
+                            author: (new Date()).valueOf()
+                        };
+                        let config = {
+                            header: {
+                                'Content-Type':'application/json'
+                            }
+                        };
+                        const axiosAjax = this.axios.create({
+                            timeout: 1000*60,
+                            withCredentials: true
+                        });
+                        axiosAjax.post('http://localhost:8080/post', postObj, config).then((res)=>{
+                            console.log(res.data)
+                            this.$notify({
+                                title: "submit success",
+                                type: "success",
+                                message: "thanks !",
+                                duration: 2000
+                            });
+                            this.emptyPost();
+                        }).catch((err)=>{
+                            console.log(err);
+                            this.emptyPost();
+                        });
+                    } else {
+                        this.$notify({
+                            title: "submit error",
+                            type: "error",
+                            message: "error",
+                            duration: 2000
+                        })
+                    }
+                }
             },
             handleClose(done) {
-                this.$confirm('Are you sure to quit post ?')
-                    .then(_ => {
-                        console.log(_)
-                        done();
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    });
+                done()
                 this.emptyPost();
             },
             changePage() {

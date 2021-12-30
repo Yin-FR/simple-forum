@@ -6,6 +6,7 @@
                        :description="block.description"
                        :number-of-comment="block.numberOfComment"
                        :updated-time="block.datetime"
+                       :post-id="block.postId"
                        class="blockClass"
             >
             </PostBlock>
@@ -26,38 +27,70 @@
                         author: "tiny_Xu",
                         numberOfComment: 532,
                         datetime: new Date(Date.now()),
-                        description: "syigvcgaiylgl af eliwfiagew fiuwgfilwe filwegfila egwilfgueiaugwfiluawfgliagfliwgf uilawgefliigwf"
+                        description: "syigvcgaiylgl af eliwfiagew fiuwgfilwe filwegfila egwilfgueiaugwfiluawfgliagfliwgf uilawgefliigwf",
+                        postId: 1
                     },
                     {
                         title: "Do you believe our government ?",
                         author: "tiny_Xu",
                         numberOfComment: 532,
                         datetime: new Date(Date.now()),
-                        description: "syigvcgaiylgl af eliwfiagew fiuwgfilwe filwegfila egwilfgueiaugwfiluawfgliagfliwgf uilawgefliigwf"
+                        description: "syigvcgaiylgl af eliwfiagew fiuwgfilwe filwegfila egwilfgueiaugwfiluawfgliagfliwgf uilawgefliigwf",
+                        postId: 2
                     },
                     {
                         title: "Do you believe our government ?",
                         author: "tiny_Xu",
                         numberOfComment: 532,
                         datetime: new Date(Date.now()),
-                        description: "syigvcgaiylgl af eliwfiagew fiuwgfilwe filwegfila egwilfgueiaugwfiluawfgliagfliwgf uilawgefliigwf"
+                        description: "syigvcgaiylgl af eliwfiagew fiuwgfilwe filwegfila egwilfgueiaugwfiluawfgliagfliwgf uilawgefliigwf",
+                        postId: 3
                     },
                     {
                         title: "Do you believe our government ?",
                         author: "tiny_Xu",
                         numberOfComment: 532,
                         datetime: new Date(Date.now()),
-                        description: "syigvcgaiylgl af eliwfiagew fiuwgfilwe filwegfila egwilfgueiaugwfiluawfgliagfliwgf uilawgefliigwf"
+                        description: "syigvcgaiylgl af eliwfiagew fiuwgfilwe filwegfila egwilfgueiaugwfiluawfgliagfliwgf uilawgefliigwf",
+                        postId: 4
                     },
                     {
                         title: "Do you believe our government ?",
                         author: "tiny_Xu",
                         numberOfComment: 532,
                         datetime: new Date(Date.now()),
-                        description: "syigvcgaiylgl af eliwfiagew fiuwgfilwe filwegfila egwilfgueiaugwfiluawfgliagfliwgf uilawgefliigwf"
+                        description: "syigvcgaiylgl af eliwfiagew fiuwgfilwe filwegfila egwilfgueiaugwfiluawfgliagfliwgf uilawgefliigwf",
+                        postId: 5
                     },
-                ]
+                ],
+                allPosts: []
             }
+        },
+        methods: {
+            getAllPosts() {
+                const axiosAjax = this.axios.create({
+                    timeout: 60*1000,
+                    withCredentials: true
+                });
+                let config = {
+                    header: {
+                        'Content-Type':'application/json'
+                    },
+                    params: {}
+                };
+                axiosAjax.get('http://localhost:8080/post', config).then((res)=>{
+                    setTimeout(()=>{this.allPosts = res.data;}, 100)
+                }).catch((err)=>{
+                    this.$notify({
+                        type: 'error',
+                        title: 'error',
+                        message: err,
+                    })
+                });
+            }
+        },
+        beforeMount() {
+            this.getAllPosts();
         }
     }
 </script>
