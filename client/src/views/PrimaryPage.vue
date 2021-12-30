@@ -1,12 +1,12 @@
 <template>
     <div class="primaryPage">
-        <div v-for="(block, index) in this.blockResume" :key="index">
-            <PostBlock :title="block.title"
-                       :author="block.author"
-                       :description="block.description"
-                       :number-of-comment="block.numberOfComment"
-                       :updated-time="block.datetime"
-                       :post-id="block.postId"
+        <div v-for="(post, index) in this.allPosts" :key="index">
+            <PostBlock :title="post.title"
+                       :author="post.author"
+                       :description="post.content"
+                       :number-of-comment="post.commentNumber"
+                       :updated-time="'...'"
+                       :post-id="post.postId"
                        class="blockClass"
             >
             </PostBlock>
@@ -70,7 +70,7 @@
             getAllPosts() {
                 const axiosAjax = this.axios.create({
                     timeout: 60*1000,
-                    withCredentials: true
+                    withCredentials: false
                 });
                 let config = {
                     header: {
@@ -78,7 +78,7 @@
                     },
                     params: {}
                 };
-                axiosAjax.get('http://localhost:8080/post', config).then((res)=>{
+                axiosAjax.get('http://localhost:8000/post', config).then((res)=>{
                     setTimeout(()=>{this.allPosts = res.data;}, 100)
                 }).catch((err)=>{
                     this.$notify({

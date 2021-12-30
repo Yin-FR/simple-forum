@@ -24,13 +24,14 @@
             author: String,
             description: String,
             numberOfComment: Number,
-            updatedTime: Date,
-            postId: Number
+            updatedTime: String,
+            postId: String
         },
         computed:{
             lastUpdatedUntilNow () {
                 let d = this.updatedTime;
-                return d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes()
+                return d;
+                // return d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes()
             }
         },
         methods: {
