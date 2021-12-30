@@ -66,17 +66,11 @@ func queue_publish(p Post, r string, ch *amqp.Channel, err error) []byte {
 }
 
 func hello_server(w http.ResponseWriter, r *http.Request) {
-<<<<<<< Updated upstream
 	setupCORS(&w, r)
+
+	w.Header().Set("Content-Type", "application/json")
+
 	if (*r).Method == "OPTIONS" {
-=======
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Header().Set("Access-Control-Allow-Origin", "*")	
-
-	if r.URL.Path != "/post" {
-		http.Error(w, "404 not found.", http.StatusNotFound)
->>>>>>> Stashed changes
 		return
 	}
 
@@ -95,10 +89,20 @@ func hello_server(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		decoder := json.NewDecoder(r.Body)
+
+		// 用于存放参数key=value数据
+		var params map[string]string
+
+		// 解析参数 存入map
+		decoder.Decode(&params)
+
+		fmt.Printf("Post from website! r.PostFrom = %v\n", params["author"])
+
 		plaintext := Post{
-			Title:   r.FormValue("title"),
-			Author:  r.FormValue("author"),
-			Content: r.FormValue("content")}
+			Title:   params["title"],
+			Author:  params["author"],
+			Content: params["content"]}
 
 		queue_publish(plaintext, "post", Ch, Error)
 
@@ -163,14 +167,10 @@ func main() {
 	mux.HandleFunc("/post", hello_server)
 	mux.HandleFunc("/comment", hello_server_comment)
 	fmt.Printf("Starting server for testing HTTP POST...\n")
-<<<<<<< Updated upstream
 
 	handler := cors.Default().Handler(mux)
 
-	http.ListenAndServe(":8080", handler)
-=======
-	http.ListenAndServe(":8000", nil)
->>>>>>> Stashed changes
+	http.ListenAndServe(":8000", handler)
 	// if err := http.ListenAndServe(":8080", nil); err != nil {
 	// 	log.Fatal(err)
 	// }
