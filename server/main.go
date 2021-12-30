@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,10 +10,22 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type post struct {
-	username string
-	content  string
-	title    string
+var Post_current []Post
+
+type Post struct {
+	Postid      []uint8   `json:"postId"`
+	Author      string    `json:"author"`
+	Content     string    `json:"content"`
+	Title       string    `json:"title"`
+	Comment_len int       `json:"commentNumber"`
+	Comment     []Comment `json:"comment"`
+}
+
+type Comment struct {
+	Post_id         []uint8 `json:"postId"`
+	Author          string  `json:"author"`
+	Post_title      string  `json:"postTitle"`
+	Comment_content string  `json:"commentContent`
 }
 
 func failOnError(err error, msg string) {
@@ -20,7 +34,7 @@ func failOnError(err error, msg string) {
 	}
 }
 
-func queue_publish(p post, r string, ch *amqp.Channel, err error) post {
+func queue_publish(p Post, r string, ch *amqp.Channel, err error) []byte {
 	err = ch.ExchangeDeclare(
 		"logs_direct", // name
 		"direct",      // type
@@ -32,7 +46,11 @@ func queue_publish(p post, r string, ch *amqp.Channel, err error) post {
 	)
 	failOnError(err, "Failed to declare an exchange")
 
-	body := p
+	h := sha256.New()
+	p.Postid = h.Sum([]byte(fmt.Sprintf("%v", p.Title)))
+	p.Comment_len = len(p.Comment)
+
+	byteBody, err := json.MarshalIndent(p, "", "  ")
 	err = ch.Publish(
 		"logs_direct", // exchange
 		r,             // routing key
@@ -40,35 +58,16 @@ func queue_publish(p post, r string, ch *amqp.Channel, err error) post {
 		false,         // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(fmt.Sprintf("%v", body)),
+			Body:        byteBody,
 		})
 	failOnError(err, "Failed to publish a message")
 
-	return body
+	return byteBody
 }
-func get_info_from_queue(q amqp.Queue) string {
-	res := ""
-	msgs, err := Ch.Consume(
-		Q_post.Name, // queue
-		"",          // consumer
-		true,        // auto ack
-		false,       // exclusive
-		false,       // no local
-		false,       // no wait
-		nil,         // args
-	)
 
-	failOnError(err, "Failed to register a consumer")
-	go func() {
-		for d := range msgs {
-			fmt.Printf(string(d.Body))
-		}
-	}()
-	return res
-}
 func hello_server(w http.ResponseWriter, r *http.Request) {
 
-	if r.URL.Path != "/" {
+	if r.URL.Path != "/post" {
 		http.Error(w, "404 not found.", http.StatusNotFound)
 		return
 	}
@@ -82,22 +81,66 @@ func hello_server(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
 		}
-		fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
-		plaintext := post{title: r.FormValue("title"), username: r.FormValue("username"), content: r.FormValue("content")}
+
+		plaintext := Post{
+			Title:   r.FormValue("title"),
+			Author:  r.FormValue("author"),
+			Content: r.FormValue("content")}
+
 		queue_publish(plaintext, "post", Ch, Error)
-		fmt.Fprintf(w, "%v", plaintext)
+
+		fmt.Fprintf(w, "ack")
 
 	case "GET":
-		fmt.Fprintf(w, get_info_from_queue(Q_post))
-		fmt.Fprintf(w, "got!!")
+
+		byteArray, err := json.MarshalIndent(Post_current, "", "  ")
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Fprintf(w, string(byteArray))
+		// fmt.Fprintf(w, "got!!")
+
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
 }
 
+func hello_server_comment(w http.ResponseWriter, r *http.Request) {
+
+	// if r.URL.Path != "/comment" {
+	// 	http.Error(w, "404 not found.", http.StatusNotFound)
+	// 	return
+	// }
+
+	// switch r.Method {
+
+	// case "POST":
+	// 	// add item to the queue
+	// 	// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
+	// 	if err := r.ParseForm(); err != nil {
+	// 		fmt.Fprintf(w, "ParseForm() err: %v", err)
+	// 		return
+	// 	}
+
+	// 	commenttext := Comment{ Post_title: r.FormValue("title"),
+	// 							Username: r.FormValue("username"),
+	// 							Comment_content: r.FormValue("content")}
+	// 	queue_publish(commenttext, "comment", Ch, Error)
+
+	// 	fmt.Fprintf(w, "%v", plaintext)
+
+	// case "GET":
+	// 	fmt.Fprintf(w, get_info_from_queue(Q_comment))
+	// 	fmt.Fprintf(w, "got!!")
+	// default:
+	// 	fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
+	// }
+}
+
 func main() {
 
-	http.HandleFunc("/", hello_server)
+	http.HandleFunc("/post", hello_server)
+	http.HandleFunc("/comment", hello_server_comment)
 	fmt.Printf("Starting server for testing HTTP POST...\n")
 	http.ListenAndServe(":8080", nil)
 	// if err := http.ListenAndServe(":8080", nil); err != nil {
