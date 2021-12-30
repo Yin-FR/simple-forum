@@ -14,7 +14,7 @@ import (
 var Post_current []Post
 
 type Post struct {
-	Postid      xid.ID    `json:"postId"`
+	Postid      string    `json:"postId"`
 	Author      string    `json:"author"`
 	Content     string    `json:"content"`
 	Title       string    `json:"title"`
@@ -23,9 +23,7 @@ type Post struct {
 }
 
 type Comment struct {
-	Post_id         xid.ID `json:"postId"`
 	Author          string `json:"author"`
-	Post_title      string `json:"postTitle"`
 	Comment_content string `json:"commentContent`
 }
 
@@ -35,7 +33,7 @@ func failOnError(err error, msg string) {
 	}
 }
 
-func queue_publish(p Post, r string, ch *amqp.Channel, err error) []byte {
+func queue_publish(p Post, r string, ch *amqp.Channel, err error, postid string) []byte {
 	err = ch.ExchangeDeclare(
 		"logs_direct", // name
 		"direct",      // type
@@ -90,14 +88,8 @@ func hello_server(w http.ResponseWriter, r *http.Request) {
 		}
 
 		decoder := json.NewDecoder(r.Body)
-
-		// 用于存放参数key=value数据
 		var params map[string]string
-
-		// 解析参数 存入map
 		decoder.Decode(&params)
-
-		fmt.Printf("Post from website! r.PostFrom = %v\n", params["author"])
 
 		plaintext := Post{
 			Title:   params["title"],
@@ -124,34 +116,39 @@ func hello_server(w http.ResponseWriter, r *http.Request) {
 
 func hello_server_comment(w http.ResponseWriter, r *http.Request) {
 
-	// if r.URL.Path != "/comment" {
-	// 	http.Error(w, "404 not found.", http.StatusNotFound)
-	// 	return
-	// }
+	if r.URL.Path != "/comment" {
+		http.Error(w, "404 not found.", http.StatusNotFound)
+		return
+	}
 
-	// switch r.Method {
+	switch r.Method {
 
-	// case "POST":
-	// 	// add item to the queue
-	// 	// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-	// 	if err := r.ParseForm(); err != nil {
-	// 		fmt.Fprintf(w, "ParseForm() err: %v", err)
-	// 		return
-	// 	}
+	case "POST":
+		// add item to the queue
+		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+			return
+		}
 
-	// 	commenttext := Comment{ Post_title: r.FormValue("title"),
-	// 							Username: r.FormValue("username"),
-	// 							Comment_content: r.FormValue("content")}
-	// 	queue_publish(commenttext, "comment", Ch, Error)
+		decoder := json.NewDecoder(r.Body)
+		var params map[string]string
+		decoder.Decode(&params)
+		postid := params["postId"]
+		plaintext := Comment{
+			Author:  params["author"],
+			Content: params["content"]}
 
-	// 	fmt.Fprintf(w, "%v", plaintext)
+		queue_publish(plaintext, "comment", Ch, Error, postid)
 
-	// case "GET":
-	// 	fmt.Fprintf(w, get_info_from_queue(Q_comment))
-	// 	fmt.Fprintf(w, "got!!")
-	// default:
-	// 	fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
-	// }
+		fmt.Fprintf(w, "ack")
+
+	case "GET":
+		fmt.Fprintf(w, get_info_from_queue(Q_comment))
+		fmt.Fprintf(w, "got!!")
+	default:
+		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
+	}
 }
 func setupCORS(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
