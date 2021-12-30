@@ -1,19 +1,20 @@
 package main
 
 import (
-	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/rs/cors"
+	"github.com/rs/xid"
 	"github.com/streadway/amqp"
 )
 
 var Post_current []Post
 
 type Post struct {
-	Postid      []uint8   `json:"postId"`
+	Postid      xid.ID    `json:"postId"`
 	Author      string    `json:"author"`
 	Content     string    `json:"content"`
 	Title       string    `json:"title"`
@@ -22,10 +23,10 @@ type Post struct {
 }
 
 type Comment struct {
-	Post_id         []uint8 `json:"postId"`
-	Author          string  `json:"author"`
-	Post_title      string  `json:"postTitle"`
-	Comment_content string  `json:"commentContent`
+	Post_id         xid.ID `json:"postId"`
+	Author          string `json:"author"`
+	Post_title      string `json:"postTitle"`
+	Comment_content string `json:"commentContent`
 }
 
 func failOnError(err error, msg string) {
@@ -46,8 +47,7 @@ func queue_publish(p Post, r string, ch *amqp.Channel, err error) []byte {
 	)
 	failOnError(err, "Failed to declare an exchange")
 
-	h := sha256.New()
-	p.Postid = h.Sum([]byte(fmt.Sprintf("%v", p.Title)))
+	p.Postid = xid.New()
 	p.Comment_len = len(p.Comment)
 
 	byteBody, err := json.MarshalIndent(p, "", "  ")
@@ -66,11 +66,15 @@ func queue_publish(p Post, r string, ch *amqp.Channel, err error) []byte {
 }
 
 func hello_server(w http.ResponseWriter, r *http.Request) {
-
-	if r.URL.Path != "/post" {
-		http.Error(w, "404 not found.", http.StatusNotFound)
+	setupCORS(&w, r)
+	if (*r).Method == "OPTIONS" {
 		return
 	}
+
+	// if r.URL.Path != "/post" {
+	// 	http.Error(w, "404 not found.", http.StatusNotFound)
+	// 	return
+	// }
 
 	switch r.Method {
 
@@ -136,13 +140,22 @@ func hello_server_comment(w http.ResponseWriter, r *http.Request) {
 	// 	fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	// }
 }
+func setupCORS(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+}
 
 func main() {
+	mux := http.NewServeMux()
 
-	http.HandleFunc("/post", hello_server)
-	http.HandleFunc("/comment", hello_server_comment)
+	mux.HandleFunc("/post", hello_server)
+	mux.HandleFunc("/comment", hello_server_comment)
 	fmt.Printf("Starting server for testing HTTP POST...\n")
-	http.ListenAndServe(":8080", nil)
+
+	handler := cors.Default().Handler(mux)
+
+	http.ListenAndServe(":8080", handler)
 	// if err := http.ListenAndServe(":8080", nil); err != nil {
 	// 	log.Fatal(err)
 	// }
