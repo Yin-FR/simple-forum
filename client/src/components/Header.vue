@@ -63,9 +63,9 @@
                         };
                         const axiosAjax = this.axios.create({
                             timeout: 1000*60,
-                            withCredentials: true
+                            withCredentials: false
                         });
-                        axiosAjax.post('http://localhost:8080/post', postObj, config).then((res)=>{
+                        axiosAjax.post('http://localhost:8000/post', postObj, config).then((res)=>{
                             console.log(res.data)
                             this.$notify({
                                 title: "submit success",

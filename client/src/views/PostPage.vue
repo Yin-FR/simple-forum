@@ -35,7 +35,7 @@
                         postId: postId
                     }
                 };
-                axiosAjax.get('http://localhost:8080/comment', config).then((res)=>{
+                axiosAjax.get('http://localhost:8000/comment', config).then((res)=>{
                     setTimeout(()=>{this.allComments = res.data;}, 100)
                 }).catch((err)=>{
                     this.$notify({
