@@ -155,7 +155,7 @@ func main() {
 
 	handler := cors.Default().Handler(mux)
 
-	http.ListenAndServe(":8080", handler)
+	http.ListenAndServe(":8000", handler)
 	// if err := http.ListenAndServe(":8080", nil); err != nil {
 	// 	log.Fatal(err)
 	// }
