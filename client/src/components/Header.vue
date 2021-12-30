@@ -51,10 +51,10 @@
                     let titleSend = this.form.title;
                     let contentSend = this.form.content;
                     if (titleSend && contentSend){
-                        let postObj = {
+                        let data = {
                             title: titleSend,
                             content: contentSend,
-                            author: (new Date()).valueOf()
+                            author: (new Date()).valueOf().toString()
                         };
                         let config = {
                             header: {
@@ -65,7 +65,8 @@
                             timeout: 1000*60,
                             withCredentials: false
                         });
-                        axiosAjax.post('http://localhost:8000/post', postObj, config).then((res)=>{
+                        axiosAjax.post('http://localhost:8000/post', data, config).then((res)=>{
+                            console.log(data)
                             console.log(res.data)
                             this.$notify({
                                 title: "submit success",

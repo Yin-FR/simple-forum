@@ -66,8 +66,15 @@ func queue_publish(p Post, r string, ch *amqp.Channel, err error) []byte {
 }
 
 func hello_server(w http.ResponseWriter, r *http.Request) {
+<<<<<<< HEAD
 
 	setupCORS(&w, r)
+=======
+	setupCORS(&w, r)
+
+	w.Header().Set("Content-Type", "application/json")
+
+>>>>>>> c543970d9e012adace9b7fdca3c7729ae4ea40ee
 	if (*r).Method == "OPTIONS" {
 		return
 	}
@@ -86,11 +93,25 @@ func hello_server(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
 		}
+<<<<<<< HEAD
 		fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
+=======
+
+		decoder := json.NewDecoder(r.Body)
+
+		// 用于存放参数key=value数据
+		var params map[string]string
+
+		// 解析参数 存入map
+		decoder.Decode(&params)
+
+		fmt.Printf("Post from website! r.PostFrom = %v\n", params["author"])
+
+>>>>>>> c543970d9e012adace9b7fdca3c7729ae4ea40ee
 		plaintext := Post{
-			Title:   r.FormValue("title"),
-			Author:  r.FormValue("author"),
-			Content: r.FormValue("content")}
+			Title:   params["title"],
+			Author:  params["author"],
+			Content: params["content"]}
 
 		queue_publish(plaintext, "post", Ch, Error)
 
@@ -155,6 +176,10 @@ func main() {
 	fmt.Printf("Starting server for testing HTTP POST...\n")
 
 	handler := cors.Default().Handler(mux)
+<<<<<<< HEAD
+=======
+
+>>>>>>> c543970d9e012adace9b7fdca3c7729ae4ea40ee
 	http.ListenAndServe(":8000", handler)
 
 	// if err := http.ListenAndServe(":8080", nil); err != nil {
