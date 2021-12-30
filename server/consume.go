@@ -66,28 +66,3 @@ func queue_built(r string, ch *amqp.Channel, err error) amqp.Queue {
 	fmt.Printf("Queue Built\n")
 	return q
 }
-
-// func Get_info_from_queue(q amqp.Queue) {
-
-// 	msgs, err := Ch.Consume(
-// 		Q_post.Name, // queue
-// 		"",          // consumer
-// 		true,        // auto ack
-// 		false,       // exclusive
-// 		false,       // no local
-// 		false,       // no wait
-// 		nil,         // args
-// 	)
-
-// 	failOnError(err, "Failed to register a consumer")
-// 	go func() {
-// 		for d := range msgs {
-// 			Post_current = append(Post_current, string(d.Body))
-// 		}
-// 	}()
-// 	// select {
-// 	// case temp := <-c_string:
-// 	// 	res_post += temp
-// 	// }
-// 	// return res_post
-// }
