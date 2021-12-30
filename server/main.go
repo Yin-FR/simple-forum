@@ -66,17 +66,9 @@ func queue_publish(p Post, r string, ch *amqp.Channel, err error) []byte {
 }
 
 func hello_server(w http.ResponseWriter, r *http.Request) {
-<<<<<<< Updated upstream
+
 	setupCORS(&w, r)
 	if (*r).Method == "OPTIONS" {
-=======
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Header().Set("Access-Control-Allow-Origin", "*")	
-
-	if r.URL.Path != "/post" {
-		http.Error(w, "404 not found.", http.StatusNotFound)
->>>>>>> Stashed changes
 		return
 	}
 
@@ -94,7 +86,7 @@ func hello_server(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
 		}
-
+		fmt.Fprintf(w, "Post from website! r.PostFrom = %v\n", r.PostForm)
 		plaintext := Post{
 			Title:   r.FormValue("title"),
 			Author:  r.FormValue("author"),
@@ -117,8 +109,6 @@ func hello_server(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
 }
-
-
 
 func hello_server_comment(w http.ResponseWriter, r *http.Request) {
 
@@ -163,18 +153,10 @@ func main() {
 	mux.HandleFunc("/post", hello_server)
 	mux.HandleFunc("/comment", hello_server_comment)
 	fmt.Printf("Starting server for testing HTTP POST...\n")
-<<<<<<< Updated upstream
 
 	handler := cors.Default().Handler(mux)
-
-<<<<<<< HEAD
 	http.ListenAndServe(":8000", handler)
-=======
-	http.ListenAndServe(":8080", handler)
-=======
-	http.ListenAndServe(":8000", nil)
->>>>>>> Stashed changes
->>>>>>> deb1bb0d36c0593212a0bb7e9b5a86cf9881b2fc
+
 	// if err := http.ListenAndServe(":8080", nil); err != nil {
 	// 	log.Fatal(err)
 	// }
