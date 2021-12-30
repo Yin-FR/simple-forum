@@ -120,7 +120,7 @@
         display: inline-block;
         float: left;
         align-items: center;
-        padding-top: 2vw;
+        padding-top: 1.2vw;
     }
 
 </style>

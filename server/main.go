@@ -87,14 +87,13 @@ func hello_server(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// decoder := json.NewDecoder(r.Body)
-		// var params map[string]string
-		// decoder.Decode(&params)
-
+		decoder := json.NewDecoder(r.Body)
+		var params map[string]string
+		decoder.Decode(&params)
 		plaintext := Post{
-			Title:   r.URL.Query()["title"][0],
-			Author:  r.URL.Query()["author"][0],
-			Content: r.URL.Query()["content"][0]}
+			Title:   params["title"],
+			Author:  params["author"],
+			Content: params["content"]}
 
 		post_queue_publish(plaintext, "post", Ch, Error)
 		fmt.Fprintf(w, "ack")
