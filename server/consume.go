@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/streadway/amqp"
@@ -42,27 +43,51 @@ func queue_built(r string, ch *amqp.Channel, err error) amqp.Queue {
 		false,
 		nil)
 	failOnError(err, "Failed to bind a queue")
-	fmt.Printf("Queue Built")
 
+	msgs, err := Ch.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto ack
+		false,  // exclusive
+		false,  // no local
+		false,  // no wait
+		nil,    // args
+	)
+
+	failOnError(err, "Failed to register a consumer")
+	go func() {
+		for d := range msgs {
+			post_temp := &Post{}
+			json.Unmarshal(d.Body, &post_temp)
+			Post_current = append(Post_current, *post_temp)
+		}
+	}()
+
+	fmt.Printf("Queue Built\n")
 	return q
-	// msgs, err := ch.Consume(
-	// 	q.Name, // queue
-	// 	"",     // consumer
-	// 	true,   // auto ack
-	// 	false,  // exclusive
-	// 	false,  // no local
-	// 	false,  // no wait
-	// 	nil,    // args
-	// )
-	// failOnError(err, "Failed to register a consumer")
-
-	// // forever := make(chan bool)
-
-	// go func() {
-	// 	for d := range msgs {
-	// 		fmt.Printf("%s", d.Body)
-	// 	}
-	// }()
-	// fmt.Printf("queue built")
-	// // <-forever
 }
+
+// func Get_info_from_queue(q amqp.Queue) {
+
+// 	msgs, err := Ch.Consume(
+// 		Q_post.Name, // queue
+// 		"",          // consumer
+// 		true,        // auto ack
+// 		false,       // exclusive
+// 		false,       // no local
+// 		false,       // no wait
+// 		nil,         // args
+// 	)
+
+// 	failOnError(err, "Failed to register a consumer")
+// 	go func() {
+// 		for d := range msgs {
+// 			Post_current = append(Post_current, string(d.Body))
+// 		}
+// 	}()
+// 	// select {
+// 	// case temp := <-c_string:
+// 	// 	res_post += temp
+// 	// }
+// 	// return res_post
+// }
