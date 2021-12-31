@@ -80,8 +80,6 @@ func hello_server(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 
 	case "POST":
-		// add item to the queue
-		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
 		if err := r.ParseForm(); err != nil {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
@@ -124,8 +122,6 @@ func hello_server_comment(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 
 	case "POST":
-		// add item to the queue
-		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
 		if err := r.ParseForm(); err != nil {
 			fmt.Fprintf(w, "ParseForm() err: %v", err)
 			return
@@ -134,9 +130,6 @@ func hello_server_comment(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 		var params map[string]string
 		decoder.Decode(&params)
-		// fmt.Fprintf(w, "%v", r.URL.Query()["postId"][0])
-		// fmt.Fprintf(w, "%v", r.URL.Query()["author"][0])
-		// fmt.Fprintf(w, "%v", r.URL.Query()["commentContent"][0])
 
 		plaintext := Comment{
 			Postid:         params["postId"],
@@ -147,9 +140,6 @@ func hello_server_comment(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "ack")
 
 	case "GET":
-		// decoder := json.NewDecoder(r.Body)
-		// var params map[string]string
-		// decoder.Decode(&params)
 
 		post_id := r.URL.Query()["postId"][0]
 
@@ -185,17 +175,4 @@ func main() {
 	handler := cors.Default().Handler(mux)
 	http.ListenAndServe(":8000", handler)
 
-	// ticker := time.NewTicker(30 * time.Second)
-	// quit := make(chan struct{})
-	// go func() {
-	// 	for {
-	// 		select {
-	// 		case <-ticker.C:
-	// 			Write_json(Post_current)
-	// 		case <-quit:
-	// 			ticker.Stop()
-	// 			return
-	// 		}
-	// 	}
-	// }()
 }
