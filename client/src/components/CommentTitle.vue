@@ -72,9 +72,7 @@
                             timeout: 1000*60,
                             withCredentials: false
                         });
-                        axiosAjax.post('http://localhost:8000/comment', data, config).then((res)=>{
-                            console.log(data)
-                            console.log(res.data)
+                        axiosAjax.post('http://localhost:8000/comment', data, config).then(()=>{
                             this.$notify({
                                 title: "submit success",
                                 type: "success",
@@ -82,6 +80,7 @@
                                 duration: 2000
                             });
                             this.emptyComment();
+                            location.reload();
                         }).catch((err)=>{
                             console.log(err);
                             this.emptyComment();

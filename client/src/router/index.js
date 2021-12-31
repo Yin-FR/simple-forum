@@ -7,7 +7,7 @@ import PostPage from "../views/PostPage";
 Vue.use(Router);
 
 export default new Router({
-    mode: 'history',
+    mode: 'hash',
     routes:[
         {path: '/', name:'home', redirect: '/primary'},
         {path: '/primary', name:'primary', component: PrimaryPage},
